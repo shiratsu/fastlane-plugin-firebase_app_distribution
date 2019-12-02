@@ -58,6 +58,8 @@ module Fastlane
 
         if platform == :android
           apk_path_default = Dir["*.apk"].last || Dir[File.join("app", "build", "outputs", "apk", "app-release.apk")].last
+          aab_path_default = Dir["*.aab"].last || Dir[File.join("app", "build", "outputs", "aab", "app-release.aab")].last
+
         end
 
         [
@@ -81,6 +83,15 @@ module Fastlane
                                        verify_block: proc do |value|
                                          UI.user_error!("firebase_app_distribution: Couldn't find apk file at path '#{value}'") unless File.exist?(value)
                                        end),
+          FastlaneCore::ConfigItem.new(key: :aab_path,
+                                      env_name: "FIREBASEAPPDISTRO_APK_PATH",
+                                      description: "Path to your APK file",
+                                      default_value: Actions.lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH] || aab_path_default,
+                                      default_value_dynamic: true,
+                                      optional: true,
+                                      verify_block: proc do |value|
+                                        UI.user_error!("firebase_app_distribution: Couldn't find apk file at path '#{value}'") unless File.exist?(value)
+                                      end),
           FastlaneCore::ConfigItem.new(key: :app,
                                        env_name: "FIREBASEAPPDISTRO_APP",
                                        description: "Your app's Firebase App ID. You can find the App ID in the Firebase console, on the General Settings page",
